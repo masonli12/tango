@@ -7,10 +7,22 @@
     </head>
 
     <body>
-        <h1>Rango says...</h1>
-        hello world! <strong>{{ boldmessage }}</strong><br />
+      
         <a href="/rango/about/">About</a><br />
-        <img src="{% static 'images/gift.jpg' %}" alt="gift" height="400", width="500">
+        {% if categories %}
+            <h3>Categories</h3>
+            <ul>
+            {% for c in categories %}
+               <li>{{ c.name }} - {{ c.views }} <a href="/rango/category/{{ c }}">{{ c.name }}</a> </li>
+
+            {% endfor %}
+            </ul>
+        {% else %}
+            <strong>There are no categories present</strong>
+        {% endif %}
+        
+
+       
     </body>
 
 </html>

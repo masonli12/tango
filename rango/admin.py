@@ -12,6 +12,7 @@ class PageAdmin(admin.ModelAdmin):
     
 
 class CategoryAdmin(admin.ModelAdmin):
+    prepopulate_fields = {'slug':('name',)}
     list_display = ('name', 'views', 'likes')
 
 admin.site.register(Category, CategoryAdmin)
