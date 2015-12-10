@@ -2,6 +2,18 @@ from django.contrib import admin
 from rango.models import Category, Page
 # Register your models here.
 
+class PageAdmin(admin.ModelAdmin):
+    # fieldsets = [
+    #     (None, {'fields':['category', 'title']}),
+    #     ('The link', {'fields':['url']}),
+    #     ('View times', {'fields':['views']})
+    # ]
+    list_display = ('category', 'title', 'url', 'views')
+    
 
-admin.site.register(Category)
-admin.site.register(Page)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'views', 'likes')
+
+admin.site.register(Category, CategoryAdmin)
+admin.site.register(Page, PageAdmin)
+
