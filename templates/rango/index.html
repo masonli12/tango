@@ -8,17 +8,30 @@
 
     <body>
       
-        <a href="/rango/about/">About</a><br />
+        <a href="{% url 'about' %}">About</a><br />
+        <a href="{% url 'add_category' %}">Add Category</a>
         {% if categories %}
             <h3>Categories</h3>
             <ul>
             {% for c in categories %}
-               <li>{{ c.name }} - {{ c.views }} <a href="/rango/category/{{ c }}">{{ c.name }}</a> </li>
+               <li> <a href="{% url 'category' c.slug %}">{{ c.name }} - {{ c.views }}</a> </li>
 
             {% endfor %}
             </ul>
         {% else %}
             <strong>There are no categories present</strong>
+        {% endif %}
+
+        {% if pages %}
+            <h3>Top View Pages</h3>
+            <ul>
+            {% for p in pages %}
+               <li> <a href="{{ p.url }}">{{ p.title }} - {{ p.views }}</a> </li>
+
+            {% endfor %}
+            </ul>
+        {% else %}
+            <strong>There are no viewed pages</strong>
         {% endif %}
         
 

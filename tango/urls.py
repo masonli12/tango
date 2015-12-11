@@ -1,6 +1,5 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
-from rango.views import missing
 from django.conf import settings
 
 
