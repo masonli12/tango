@@ -7,9 +7,16 @@
     </head>
 
     <body>
-        <a href="/rango/register/">Register Here</a>
+        {% if user.is_authenticated %}
+            <h1>Hello {{ user.username }} </h1>
+        {% else %}
+            <h1>Hello world</h1>
+        {% endif %}
+        
+        <a href="/rango/register/">Register Here</a><br />
         <a href="{% url 'about' %}">About</a><br />
-        <a href="{% url 'add_category' %}">Add Category</a>
+        <a href="{% url 'add_category' %}">Add Category</a><br />
+        <a href="/rango/login/">Login</a><br />
         {% if categories %}
             <h3>Categories</h3>
             <ul>

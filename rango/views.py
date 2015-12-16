@@ -1,9 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from rango.models import Category, Page
 from django.http import Http404
 from rango.forms import CategoryForm, PageForm
 from rango.forms import UserForm, UserProfileForm
+from django.contrib.auth import authenticate, login
+
 # Create your views here.
 
 
@@ -120,3 +122,22 @@ def register(request):
         {'user_form': user_form,
          'profile_form': profile_form,
          'registered': registered})
+
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                login(request, user)
+                return HttpResponseRedirect('/rango/')
+            else:
+                return HttpResponse("Your account is disabled")
+        else:
+            print "invalid detail: {0}".format(username)
+            return HttpResponse("Invalid login details")
+    else:
+        return render(request, 'rango/login.html')
