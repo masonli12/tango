@@ -1,48 +1,38 @@
-<!DOCTYPE html>
+{% extends 'base.html' %}
 {% load static %}
-<html>
 
-    <head>
-        <title>Rango</title>
-    </head>
+{% block title %}
+    Home Page
+{% endblock title %}
 
-    <body>
-        {% if user.is_authenticated %}
-            <h1>Hello {{ user.username }} </h1>
-        {% else %}
-            <h1>Hello world</h1>
-        {% endif %}
-        
-        <a href="/rango/register/">Register Here</a><br />
-        <a href="{% url 'about' %}">About</a><br />
-        <a href="{% url 'add_category' %}">Add Category</a><br />
-        <a href="/rango/login/">Login</a><br />
-        {% if categories %}
-            <h3>Categories</h3>
-            <ul>
-            {% for c in categories %}
-               <li> <a href="{% url 'category' c.slug %}">{{ c.name }} - {{ c.views }}</a> </li>
+{% block body_block %}
+    <p>visits: {{  visits }}</p> 
+    {% if categories %}
+        <h3>Categories</h3>
+        <ul>
+        {% for c in categories %}
+           <li> <a href="{% url 'category' c.slug %}">{{ c.name }} - {{ c.views }}</a> </li>
 
-            {% endfor %}
-            </ul>
-        {% else %}
-            <strong>There are no categories present</strong>
-        {% endif %}
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>There are no categories present</strong>
+    {% endif %}
 
-        {% if pages %}
-            <h3>Top View Pages</h3>
-            <ul>
-            {% for p in pages %}
-               <li> <a href="{{ p.url }}">{{ p.title }} - {{ p.views }}</a> </li>
+    {% if pages %}
+        <h3>Top View Pages</h3>
+        <ul>
+        {% for p in pages %}
+           <li> <a href="{{ p.url }}">{{ p.title }} - {{ p.views }}</a> </li>
 
-            {% endfor %}
-            </ul>
-        {% else %}
-            <strong>There are no viewed pages</strong>
-        {% endif %}
+        {% endfor %}
+        </ul>
+    {% else %}
+        <strong>There are no viewed pages</strong>
+    {% endif %}
         
 
+{% endblock body_block %}
+
+      
        
-    </body>
-
-</html>

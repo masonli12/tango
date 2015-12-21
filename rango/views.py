@@ -5,7 +5,9 @@ from django.http import Http404
 from rango.forms import CategoryForm, PageForm
 from rango.forms import UserForm, UserProfileForm
 from django.contrib.auth import authenticate, login
-
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from datetime import datetime
 # Create your views here.
 
 
@@ -13,15 +15,32 @@ def index(request):
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
     context_dict = {'categories': category_list, 'pages': page_list}
-    return render(request, 'rango/index.html', context_dict)
+
+    visits = int(request.COOKIES.get('visits', 1))
+    reset_last_visit_time = False
+    context_dict['visits'] = visits
+    response = render(request, 'rango/index.html', context_dict)
+    if 'last_visit' in request.COOKIES:
+        last_visit = request.COOKIES['last_visit']
+        last_visit_time = datetime.strptime(
+            last_visit[:-7], "%Y-%m-%d %H:%M:%S")
+        if (datetime.now() - last_visit_time).seconds > 5:
+            visits = visits + 1
+            reset_last_visit_time = True
+    else:
+        reset_last_visit_time = True
+        context_dict['visits'] = visits
+        response = render(request, 'rango/index.html', context_dict)
+
+    if reset_last_visit_time:
+        response.set_cookie('visits', visits)
+        response.set_cookie('last_visit', datetime.now())
+
+    return response
 
 
 def about(request):
     return render(request, 'rango/about.html')
-
-
-def display(request, id):
-    return HttpResponse("got id: %s" % (id))
 
 
 def category(request, category_name_slug):
@@ -39,6 +58,7 @@ def category(request, category_name_slug):
     return render(request, 'rango/category.html', context_dict)
 
 
+@login_required
 def add_category(request):
     # A HTTP POST?
     if request.method == 'POST':
@@ -65,6 +85,7 @@ def add_category(request):
     return render(request, 'rango/add_category.html', {'form': form})
 
 
+@login_required
 def add_page(request, category_name_slug):
     try:
         cat = Category.objects.get(slug=category_name_slug)
@@ -117,11 +138,12 @@ def register(request):
         user_form = UserForm()
         profile_form = UserProfileForm()
 
-    return render(request,
-        'rango/register.html',
-        {'user_form': user_form,
-         'profile_form': profile_form,
-         'registered': registered})
+    return render(
+                request,
+                'rango/register.html',
+                {'user_form': user_form,
+                 'profile_form': profile_form,
+                 'registered': registered})
 
 
 def user_login(request):
@@ -137,7 +159,18 @@ def user_login(request):
             else:
                 return HttpResponse("Your account is disabled")
         else:
-            print "invalid detail: {0}".format(username)
+            print "invalid detail: {0}, {1}".format(username, password)
             return HttpResponse("Invalid login details")
     else:
         return render(request, 'rango/login.html')
+
+
+@login_required
+def restricted(request):
+    return HttpResponse("logged in")
+
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/rango/')
