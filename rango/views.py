@@ -12,29 +12,36 @@ from datetime import datetime
 
 
 def index(request):
+
     category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
+
     context_dict = {'categories': category_list, 'pages': page_list}
 
-    visits = int(request.COOKIES.get('visits', 1))
+    visits = request.session.get('visits')
+    if not visits:
+        visits = 1
     reset_last_visit_time = False
-    context_dict['visits'] = visits
-    response = render(request, 'rango/index.html', context_dict)
-    if 'last_visit' in request.COOKIES:
-        last_visit = request.COOKIES['last_visit']
-        last_visit_time = datetime.strptime(
-            last_visit[:-7], "%Y-%m-%d %H:%M:%S")
-        if (datetime.now() - last_visit_time).seconds > 5:
+
+    last_visit = request.session.get('last_visit')
+    if last_visit:
+        last_visit_time = datetime.strptime(last_visit[:-7], "%Y-%m-%d %H:%M:%S")
+
+        if (datetime.now() - last_visit_time).seconds > 0:
+            # ...reassign the value of the cookie to +1 of what it was before...
             visits = visits + 1
+            # ...and update the last visit cookie, too.
             reset_last_visit_time = True
     else:
+        # Cookie last_visit doesn't exist, so create it to the current date/time.
         reset_last_visit_time = True
-        context_dict['visits'] = visits
-        response = render(request, 'rango/index.html', context_dict)
 
     if reset_last_visit_time:
-        response.set_cookie('visits', visits)
-        response.set_cookie('last_visit', datetime.now())
+        request.session['last_visit'] = str(datetime.now())
+        request.session['visits'] = visits
+    context_dict['visits'] = visits
+
+    response = render(request,'rango/index.html', context_dict)
 
     return response
 
