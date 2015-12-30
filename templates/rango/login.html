@@ -1,17 +1,17 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Rango</title>
-</head>
-<body>
-    <h1>Login to rango</h1>
-    <form id="login_form" method="post" action="/rango/login/">
-        {% csrf_token %}
-        Username: <input type="text" name="username" value="" size="50">
-        <br />
-        Password: <input type="password" name="password" value="" size="50">
-        <br />
-        <input type="submit" value="submit">
-    </form>
-</body>
-</html>
+
+{% block body_block %}
+<link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="http://getbootstrap.com/examples/signin/signin.css" rel="stylesheet">
+
+
+
+<form id="login_form" role="form" class="form-signin" method="post" action="/rango/login/">
+    <h2 class="form-signin-heading">Please sign in</h2>
+    {% csrf_token %}
+    <input  class="form-control" type="text" name="username" placeholder="Username" required autofocus=""/>
+
+    <input  class="form-control" type="password" name="password" placeholder="Password"/>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit" value="Submit" >Sign in</button>
+</form>
+{% endblock %}

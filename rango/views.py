@@ -47,7 +47,11 @@ def index(request):
 
 
 def about(request):
-    return render(request, 'rango/about.html')
+    if request.session.get('visits'):
+        visits = request.session.get('visits')
+    else:
+        visits = 0
+    return render(request, 'rango/about.html', {'visits': visits})
 
 
 def category(request, category_name_slug):
