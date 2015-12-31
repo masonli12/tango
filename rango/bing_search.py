@@ -65,3 +65,18 @@ def run_query(search_terms):
 
     # Return the list of results to the calling function.
     return results
+
+def main():
+    # ask user input query string
+    user_query = raw_input('input query:')
+    # call query
+    results = run_query(user_query)
+    # print out rank, title and url
+    i = 0
+    for r in results:
+        i = i + 1
+        print u"{} {} {}".format(i, r['title'], r['link'])
+    
+
+if __name__ == '__main__':
+    main()
