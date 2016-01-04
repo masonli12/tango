@@ -60,6 +60,8 @@ def category(request, category_name_slug):
     try:
         category = Category.objects.get(slug=category_name_slug)
         context_dict['category_name'] = category.name
+        view_time = category.views + 1
+        context_dict['views'] = view_time
         pages = Page.objects.filter(category=category)
         context_dict['pages'] = pages
         context_dict['category'] = category
@@ -195,3 +197,17 @@ def search(request):
             result_list = run_query(query)
 
     return render(request, 'rango/search.html', {'result_list': result_list})
+
+def track_view(request, category_name_slug):
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+            page_id = page_id + 1
+
+            try:
+                cat = Category.objects.get(slug=category_name_slug)
+                cat.views = page_id
+                cat.save()
+            except Category.DoesNotExist:
+                cat = None
+    return HttpResponseRedirect('/rango/')
