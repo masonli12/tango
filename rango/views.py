@@ -1,6 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from rango.models import Category, Page
+from rango.models import Category, Page, UserProfile
 from django.http import Http404
 from rango.forms import CategoryForm, PageForm
 from rango.forms import UserForm, UserProfileForm
@@ -62,14 +62,15 @@ def category(request, category_name_slug):
         query = request.POST['query'].strip()
         if query:
             result_list = run_query(query)
-            context_dict['result_list'] = result_list
+            if result_list:
+                context_dict['result_list'] = result_list
 
     try:
         category = Category.objects.get(slug=category_name_slug)
         context_dict['category_name'] = category.name
         view_time = category.views + 1
         context_dict['views'] = view_time
-        pages = Page.objects.filter(category=category)
+        pages = Page.objects.filter(category=category).order_by('-views')
         context_dict['pages'] = pages
         context_dict['category'] = category
         context_dict['category_name_slug'] = category_name_slug
@@ -207,11 +208,40 @@ def search(request):
 
 # /rango/goto/?page_id=1
 def track_url(request):
+    url = '/rango/'
     if request.method == 'GET':
         if 'page_id' in request.GET:
             page_id = request.GET['page_id']
-            p = Page.objects.get(id=page_id)
-            p.views = p.views + 1
-            p.save()
+            try:
+                p = Page.objects.get(id=page_id)
+                p.views = p.views + 1
+                p.save()
+                url = p.url
+            except:
+                pass
 
-    return HttpResponseRedirect(p.url)
+    return redirect(url)
+
+def profile(request):
+    context_dict = {}
+    if request.user:
+
+        profile = UserProfile.objects.get(user=request.user)
+        context_dict['profile'] = profile
+
+    return render(request, 'rango/profile.html', context_dict)
+
+@login_required
+def like_category(request):
+    cat_id = None
+    if request.method == 'GET':
+        cat_id = request.GET['category_id']
+
+    likes = 0
+    if cat_id:
+        cat = Category.objects.get(id=int(cat_id))
+        if cat:
+            likes = cat.likes + 1
+            cat.likes = likes
+            cat.save()
+    return HttpResponse(likes)

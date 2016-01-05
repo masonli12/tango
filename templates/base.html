@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load rango_extras %}
+{% load staticfiles %}
 
 <html lang="en">
   <head>
@@ -41,6 +42,7 @@
                     {% if user.is_authenticated %}
                         
                         <li><a href="{% url 'logout' %}?next=/rango/">Logout</a></li>
+                        <li><a href="{% url 'profile' %}">Profile</a></li>
                         <li><a href="{% url 'add_category' %}">Add a New Category</a></li>
                     {% else %}
                         <li><a href="{% url 'register' %}">Register Here</a></li>
@@ -77,5 +79,8 @@
     <script src="http://getbootstrap.com/dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="http://getbootstrap.com/assets/js/ie10-viewport-bug-workaround.js"></script>
+  
+    <script src="{% static "js/rango-jquery.js" %}"></script>
+    <script src="{% static "js/rango-ajax.js" %}"></script>
   </body>
 </html>
