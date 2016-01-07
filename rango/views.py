@@ -121,6 +121,7 @@ def add_page(request, category_name_slug):
                 page = form.save(commit=False)
                 page.category = cat
                 page.views = 0
+                page.first_visit = datetime.now()
                 page.save()
                 return category(request, category_name_slug)
         else:
@@ -215,6 +216,7 @@ def track_url(request):
             try:
                 p = Page.objects.get(id=page_id)
                 p.views = p.views + 1
+                p.last_visit = datetime.now()
                 p.save()
                 url = p.url
             except:
